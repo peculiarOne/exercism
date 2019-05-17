@@ -1,8 +1,12 @@
+extern crate unicode_segmentation;
+use unicode_segmentation::UnicodeSegmentation;
+
 pub fn reverse(input: &str) -> String {
+    let graphemes = UnicodeSegmentation::graphemes(input, true).collect::<Vec<&str>>();
+
     let mut reversed = String::new();
-    for c in input.chars().rev() {
-        reversed.push(c);
-    };
+    for g in graphemes.iter().rev() {
+        reversed.push_str(g);
+    }
     reversed
-    // unimplemented!("Write a function to reverse {}", input);
 }
