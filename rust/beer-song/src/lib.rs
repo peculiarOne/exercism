@@ -18,12 +18,9 @@ pub fn verse(n: i32) -> String {
 }
 
 pub fn sing(start: i32, end: i32) -> String {
-    let mut song = String::new();
-    for n in (end..=start).rev() {
-        song.push_str(&verse(n));
-        if n > end {
-            song.push('\n');
-        }
-    }
-    song
+    (end..=start)
+        .rev()
+        .map(|n| verse(n))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
