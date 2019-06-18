@@ -14,8 +14,7 @@ pub fn reply(message: &str) -> &str {
         !alpha_only.is_empty() && alpha_only.chars().all(|c| c.is_uppercase())
     };
 
-    let last_char = trimmed.chars().rev().next();
-    match last_char {
+    match trimmed.chars().last() {
         Some('?') => if is_shouted { YELL_QUESTION } else { QUESTION },
         Some(_) => if is_shouted { YELL } else { CATCH_ALL },
         None => SILENT, // no last character == empty message
