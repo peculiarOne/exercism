@@ -5,7 +5,7 @@ pub mod graph {
         pub mod node {
             use std::collections::HashMap;
 
-            #[derive(Debug, PartialEq)]
+            #[derive(Clone, Debug, PartialEq)]
             pub struct Node {
                 pub name: String,
                 pub attrs: HashMap<String, String>,
@@ -27,7 +27,7 @@ pub mod graph {
                 }
 
                 pub fn get_attr(&self, attr_name: &str) -> Option<&str> {
-                    self.attrs.get(attr_name).map(|s| &**s)
+                    self.attrs.get(attr_name).map(|s| s.as_str())
                 }
             }
         }
@@ -35,14 +35,20 @@ pub mod graph {
         pub mod edge {
             use std::collections::HashMap;
 
-            #[derive(Debug, PartialEq)]
+            #[derive(Clone, Debug, PartialEq)]
             pub struct Edge {
                 pub attrs: HashMap<String, String>,
+                pub from: String,
+                pub to: String,
             }
 
             impl Edge {
                 pub fn new(from: &str, to: &str) -> Self {
-                    unimplemented!()
+                    Edge {
+                        from: from.to_string(),
+                        to: to.to_string(),
+                        attrs: HashMap::new(),
+                    }
                 }
 
                 pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
@@ -59,13 +65,13 @@ pub mod graph {
     use graph_items::node::Node;
 
     #[derive(Debug, PartialEq)]
-    pub struct Graph<'a> {
-        pub nodes: Vec<&'a Node>,
+    pub struct Graph {
+        pub nodes: Vec<Node>,
         pub edges: Vec<Edge>,
         pub attrs: HashMap<String, String>,
     }
 
-    impl<'a> Graph<'a> {
+    impl Graph {
         pub fn new() -> Self {
             Graph {
                 nodes: vec![],
@@ -75,14 +81,17 @@ pub mod graph {
         }
 
         pub fn with_nodes(mut self, nodes: &Vec<Node>) -> Self {
-            for node in nodes {
+            for node in nodes.clone() {
                 self.nodes.push(node);
             }
             self
         }
 
         pub fn with_edges(mut self, edges: &Vec<Edge>) -> Self {
-            unimplemented!()
+            for edge in edges.clone() {
+                self.edges.push(edge);
+            }
+            self
         }
 
         pub fn with_attrs(mut self, attrs: &[(&str, &str)]) -> Self {
