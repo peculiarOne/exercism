@@ -16,9 +16,40 @@ impl<T> Elem<T> {
     }
 }
 
+pub struct SimpleLinkedListIter<'a, T> {
+    list: &'a SimpleLinkedList<T>,
+    current: &'a Option<Elem<T>>
+}
+
+impl<'a, T> Iterator for SimpleLinkedListIter<'a, T> {
+    type Item = &'a Elem<T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let r = match self.current {
+            None => None,
+            Some(c) => {
+                self.current = match &c.next_elem {
+                    None => None,
+                    Some(x) => Some(x)
+                }.as_ref();
+
+                Some(c)
+            }
+        };
+        r
+    }
+}
+ 
 impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList { head: None }
+    }
+
+    pub fn iter(&self) -> SimpleLinkedListIter<T> {
+        SimpleLinkedListIter {
+            list: self,
+            current: &self.head
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -60,14 +91,14 @@ impl<T> SimpleLinkedList<T> {
 
 impl<T: Clone> SimpleLinkedList<T> {
     pub fn rev(&self) -> SimpleLinkedList<T> {
-        let mut reversed = SimpleLinkedList::new();
-        fn reverse<T: Clone>(reversed: &mut SimpleLinkedList<T>, current: Option<Elem<T>>) {
-            if let Some(element) = current {
-                reversed.push(element.value.clone());
-                reverse(reversed, element.next_elem.map(|x| *x));
-            }
-        }
-        reverse(&mut reversed, self.head);
+        // let mut reversed = SimpleLinkedList::new();
+        // fn reverse<T: Clone>(reversed: &mut SimpleLinkedList<T>, current: &Option<Elem<T>>) {
+        //     if let Some(element) = current {
+        //         reversed.push(element.value.clone());
+        //         reverse(reversed, element.next_elem.map(|x| *x));
+        //     }
+        // }
+        // reverse(&mut reversed, self.head);
         unimplemented!()
     }
 }
