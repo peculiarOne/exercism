@@ -16,40 +16,44 @@ impl<T> Elem<T> {
     }
 }
 
-pub struct SimpleLinkedListIter<'a, T> {
+pub struct IterSimpleLinkedList<'a, T: 'a> {
     list: &'a SimpleLinkedList<T>,
-    current: &'a Option<Elem<T>>
+    current: Option<Elem<T>>,
 }
+ impl<'a, T: 'a + Clone> IterSimpleLinkedList<'a, T> {
+     fn new(list: &'a SimpleLinkedList<T>) -> Self {
+         Self {
+             list: list,
+             current: list.head
+         }
+     }
+ }
 
-impl<'a, T> Iterator for SimpleLinkedListIter<'a, T> {
-    type Item = &'a Elem<T>;
+impl<'a, T: 'a + Clone> Iterator for IterSimpleLinkedList<'a, T> {
+    type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let r = match self.current {
-            None => None,
-            Some(c) => {
-                self.current = match &c.next_elem {
-                    None => None,
-                    Some(x) => Some(x)
-                }.as_ref();
+        // update next
+        let prev = self.current.map(|e| e.value);
+            let next_current = match self.current {
+                None => None,
+                Some(x) => x.next_elem.map(|v| *v)
+            };
 
-                Some(c)
-            }
-        };
-        r
+        self.current = next_current;
+
+        prev
+
     }
 }
  
-impl<T> SimpleLinkedList<T> {
+impl<T: Clone> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList { head: None }
     }
 
-    pub fn iter(&self) -> SimpleLinkedListIter<T> {
-        SimpleLinkedListIter {
-            list: self,
-            current: &self.head
-        }
+    pub fn iter(&self) -> IterSimpleLinkedList<T> {
+        IterSimpleLinkedList::new(self)
     }
 
     pub fn len(&self) -> usize {
