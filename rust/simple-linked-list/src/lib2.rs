@@ -1,5 +1,3 @@
-use std::iter::FromIterator;
-
 pub struct SimpleLinkedList<T> {
     head: Option<Elem<T>>,
 }
@@ -18,6 +16,37 @@ impl<T> Elem<T> {
     }
 }
 
+pub struct IterSimpleLinkedList<'a, T: 'a> {
+    list: &'a SimpleLinkedList<T>,
+    current: Option<Elem<T>>,
+}
+ impl<'a, T: 'a + Clone> IterSimpleLinkedList<'a, T> {
+     fn new(list: &'a SimpleLinkedList<T>) -> Self {
+         Self {
+             list: list,
+             current: list.head
+         }
+     }
+ }
+
+impl<'a, T: 'a + Clone> Iterator for IterSimpleLinkedList<'a, T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // update next
+        let prev = self.current.map(|e| e.value);
+            let next_current = match self.current {
+                None => None,
+                Some(x) => x.next_elem.map(|v| *v)
+            };
+
+        self.current = next_current;
+
+        prev
+
+    }
+}
+ 
 impl<T> SimpleLinkedList<T> {
     pub fn new() -> Self {
         SimpleLinkedList { head: None }
@@ -59,23 +88,14 @@ impl<T> SimpleLinkedList<T> {
         self.head.as_ref().map(|e| &e.value)
     }
 
-    pub fn rev(self) -> SimpleLinkedList<T> {
-        let mut vec: Vec<T> = self.into();
-        vec.reverse();
-        // need to use into_inter() to get an iterator over the actual objects rather than references to them
-        let reversed_list = SimpleLinkedList::from_iter(vec.into_iter());
-        reversed_list
+        pub fn rev(self) -> SimpleLinkedList<T> {
+        unimplemented!()
     }
 }
 
 impl<T> FromIterator<T> for SimpleLinkedList<T> {
-    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
-        let mut sll: SimpleLinkedList<T> = SimpleLinkedList::new();
-
-        for i in iter {
-            sll.push(i)
-        }
-        sll
+    fn from_iter<I: IntoIterator<Item = T>>(_iter: I) -> Self {
+        unimplemented!()
     }
 }
 
@@ -92,19 +112,6 @@ impl<T> FromIterator<T> for SimpleLinkedList<T> {
 
 impl<T> Into<Vec<T>> for SimpleLinkedList<T> {
     fn into(self) -> Vec<T> {
-        fn into_vec<T>(elem: Option<Box<Elem<T>>>, mut vec: Vec<T>) -> Vec<T> {
-            match elem {
-                Some(e) => {
-                    let val = (*e).value;
-                    vec.push(val);
-                    into_vec(e.next_elem, vec)
-                },
-                None => vec
-            }
-        }
-
-        let mut vec = into_vec(self.head.map(Box::new), vec![]);
-        vec.reverse();
-        vec
+        unimplemented!()
     }
 }
